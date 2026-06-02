@@ -1,0 +1,17 @@
+{
+  "name": "showcase_cyber",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Static cyber portfolio site",
+  "scripts": {
+    "start": "serve . -l 4173"
+  },
+  "dependencies": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "@babel/standalone": "7.29.0"
+  },
+  "devDependencies": {
+    "serve": "^14.2.0"
+  }
+}
