@@ -4,7 +4,9 @@
   "private": true,
   "description": "Static cyber portfolio site",
   "scripts": {
-    "start": "serve . -l 4173"
+    "prestart": "node ./scripts/generate-emailjs-config.js",
+    "start": "serve . -l 4173",
+    "build": "node ./scripts/generate-emailjs-config.js"
   },
   "dependencies": {
     "react": "18.3.1",
@@ -12,6 +14,7 @@
     "@babel/standalone": "7.29.0"
   },
   "devDependencies": {
-    "serve": "^14.2.0"
+    "serve": "^14.2.0",
+    "dotenv": "^16.3.1"
   }
 }

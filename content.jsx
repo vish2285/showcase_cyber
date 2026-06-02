@@ -298,6 +298,13 @@ function ContactSection({ accent }) {
   const [form, setForm] = React.useState({ name: '', email: '', message: '' });
   const [sent, setSent] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState('');
+
+  React.useEffect(() => {
+    if (window.emailjs && window.EMAILJS_PUBLIC_KEY) {
+      window.emailjs.init(window.EMAILJS_PUBLIC_KEY);
+    }
+  }, []);
 
   const socials = [
     { icon: I.github, label: 'GitHub', handle: 'github.com/vish2285', href: 'https://github.com/vish2285' },
@@ -309,9 +316,35 @@ function ContactSection({ accent }) {
     e.preventDefault();
     if (!form.name || !form.email || !form.message) return;
     setLoading(true);
-    await new Promise(r => setTimeout(r, 900));
-    setLoading(false);
-    setSent(true);
+    setError('');
+
+    const configured = window.emailjs && window.EMAILJS_SERVICE_ID && window.EMAILJS_TEMPLATE_ID && window.EMAILJS_PUBLIC_KEY;
+    if (!configured) {
+      setLoading(false);
+      setError('Email service is not configured. Create a .env file and rebuild.');
+      return;
+    }
+
+    try {
+      await window.emailjs.send(
+        window.EMAILJS_SERVICE_ID,
+        window.EMAILJS_TEMPLATE_ID,
+        {
+          from_name: form.name,
+          from_email: form.email,
+          message: form.message,
+          to_email: window.EMAILJS_TO_EMAIL || 'vishwas2284@gmail.com',
+        },
+        window.EMAILJS_PUBLIC_KEY
+      );
+      setSent(true);
+      setForm({ name: '', email: '', message: '' });
+    } catch (err) {
+      console.error('EmailJS error', err);
+      setError('Could not send your message. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -354,6 +387,7 @@ function ContactSection({ accent }) {
                 </div>
               ) : (
                 <form onSubmit={submit} className="space-y-5">
+                  {error && <div className="text-sm text-red-400">{error}</div>}
                   <Field label="Name" name="name" value={form.name} onChange={v => setForm({ ...form, name: v })} accent={accent} />
                   <Field label="Email" name="email" type="email" value={form.email} onChange={v => setForm({ ...form, email: v })} accent={accent} />
                   <Field label="Message" name="message" textarea value={form.message} onChange={v => setForm({ ...form, message: v })} accent={accent} />
